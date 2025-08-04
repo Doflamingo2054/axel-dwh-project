@@ -1,7 +1,7 @@
 # axel-dwh-project
 Building a modern Data Warehouse with Postgres using ETL processes , Data Modeling for Analytics purpose.
 
-Welcome to my first DWH and Analytics Project!
+I'm Axel a junior Data Enginner ,Welcome to my first DWH and Analytics Project!
 This project demonstrates a comprehensive data warehousing and analytics solution, from building a data warehouse to generating actionable insights.
 
 This project involves:
