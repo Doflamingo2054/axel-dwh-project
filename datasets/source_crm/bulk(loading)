@@ -1,0 +1,76 @@
+
+
+-- you can proceed by this script or by importing the data directly on the pg admin Interface or...
+/*
+by command lines using \copy if you have not the permission required
+first command: psql -U postgres -d datawarehouse -h localhost
+
+second_command: \copy FROM 'chemin ou path' DELIMITER ',' HEADER CSV;
+
+*/
+
+
+/*Here we use truncate to refresh the table from the file , Each time we add a row, 
+if these two commands(trc and copy) are being run , the new rows will be loaded in the database table
+*/
+
+-- FOR CRM SOURCES
+
+CREATE OR REPLACE PROCEDURE bronze.load_bronze()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	DECLARE
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
+    batch_start_time TIMESTAMP;
+    batch_end_time TIMESTAMP;
+	
+	batch_start_time := now();
+	TRUNCATE TABLE bronze.crm_prd_info;
+	COPY bronze.crm_prd_info
+	FROM '/tmp/prd_info.csv'
+	DELIMITER ','
+	CSV HEADER;
+
+	
+	TRUNCATE TABLE bronze.crm_sales_details;
+	COPY bronze.crm_sales_details
+	FROM '/tmp/sales_details.csv'
+	DELIMITER ','
+	CSV HEADER;
+
+	TRUNCATE TABLE bronze.crm_cust_info;
+	COPY bronze.crm_cust_info
+	FROM '/tmp/cust_info.csv'
+	DELIMITER ','
+	CSV HEADER;
+	
+	-- FOR ERP SOURCES
+
+	TRUNCATE TABLE bronze.erp_loc_a101;
+	COPY bronze.erp_loc_a101
+	FROM '/tmp/LOC_A101.csv'
+	DELIMITER ','
+	CSV HEADER;
+	
+	TRUNCATE TABLE bronze.erp_cust_az12;
+	COPY bronze.erp_cust_az12
+	FROM '/tmp/CUST_AZ12.csv'
+	DELIMITER ','
+	CSV HEADER;
+	
+	TRUNCATE TABLE bronze.erp_px_cat_g1v2;
+	COPY bronze.erp_px_cat_g1v2
+	FROM '/tmp/PX_CAT_G1V2.csv'
+	DELIMITER ','
+	CSV HEADER;	
+    batch_end_time := now();
+	RAISE NOTICE 'Durée :', EXTRACT(EPOCH FROM (batch_end_time - batch_start_time));
+END;
+$$;
+
+
+SELECT COUNT(*)
+FROM bronze.erp_cust_az12;
+
